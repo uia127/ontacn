@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IT English Revision Hub - Tiếng Anh Chuyên Ngành CNTT</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Phosphor Icons -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Card Flip 3D effect */
+    .perspective-1000 {
+      perspective: 1000px;
+    }
+    .transform-style-preserve-3d {
+      transform-style: preserve-3d;
+    }
+    .backface-hidden {
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+    .rotate-y-180 {
+      transform: rotateY(180deg);
+    }
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    .dark ::-webkit-scrollbar-thumb {
+      background: #334155;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen flex flex-col font-sans antialiased transition-colors duration-200">
+
+  <!-- TOP HEADER / NAV -->
+  <header class="sticky top-0 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur border-b border-slate-200 dark:border-slate-800">
+    <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/25">
+          <i class="ph ph-terminal-window text-2xl font-bold"></i>
+        </div>
+        <div>
+          <h1 class="font-extrabold text-lg sm:text-xl tracking-tight bg-gradient-to-r from-indigo-600 to-violet-600 dark:from-indigo-400 dark:to-violet-400 bg-clip-text text-transparent">
+            IT English Revision
+          </h1>
+          <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Ôn thi Tiếng Anh Chuyên Ngành CNTT</p>
+        </div>
+      </div>
+
+      <!-- Quick stats & Theme Toggle -->
+      <div class="flex items-center space-x-2">
+        <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-xs font-semibold text-slate-600 dark:text-slate-300">
+          <i class="ph-fill ph-check-circle text-emerald-500 text-sm"></i>
+          <span>Mastery: <span id="global-score">0</span> pts</span>
+        </div>
+        <button id="theme-toggle" class="w-10 h-10 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors" title="Đổi giao diện Sáng/Tối">
+          <i class="ph ph-moon text-xl dark:hidden"></i>
+          <i class="ph ph-sun text-xl hidden dark:block text-amber-400"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="max-w-6xl mx-auto px-4 flex overflow-x-auto gap-2 py-2 border-t border-slate-100 dark:border-slate-800/60 no-scrollbar">
+      <button onclick="switchTab('flashcards')" id="tab-flashcards" class="nav-tab active-tab px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all flex items-center gap-2">
+        <i class="ph ph-cards text-lg"></i> 1. Flashcards & Tra Cứu (48)
+      </button>
+      <button onclick="switchTab('matching')" id="tab-matching" class="nav-tab px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all flex items-center gap-2">
+        <i class="ph ph-puzzle-piece text-lg"></i> 2. Ghép Thuật Ngữ (Quiz)
+      </button>
+      <button onclick="switchTab('fill')" id="tab-fill" class="nav-tab px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all flex items-center gap-2">
+        <i class="ph ph-textbox text-lg"></i> 3. Điền Từ (Fill in Blanks)
+      </button>
+      <button onclick="switchTab('tf')" id="tab-tf" class="nav-tab px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all flex items-center gap-2">
+        <i class="ph ph-check-square-offset text-lg"></i> 4. Đúng / Sai (True / False)
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="max-w-6xl mx-auto px-4 py-6 flex-1 w-full">
+
+    <!-- TAB 1: FLASHCARDS & VOCABULARY SEARCH -->
+    <section id="section-flashcards" class="space-y-6">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm">
+        <div>
+          <h2 class="text-lg font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+            <span class="p-2 bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 rounded-lg"><i class="ph ph-book-open"></i></span>
+            Tra cứu & Flashcard 48 Thuật ngữ CNTT
+          </h2>
+          <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Lật thẻ để ghi nhớ định nghĩa, tìm kiếm nhanh hoặc bấm loa để nghe phát âm.</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="relative w-full md:w-64">
+            <i class="ph ph-magnifying-glass absolute left-3 top-3 text-slate-400 text-base"></i>
+            <input type="text" id="fc-search" oninput="renderFlashcards()" placeholder="Tìm thuật ngữ hoặc nghĩa..." class="w-full pl-9 pr-4 py-2 text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white" />
+          </div>
+          <button onclick="shuffleFlashcards()" class="px-3.5 py-2 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 text-indigo-600 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/60 text-sm font-medium flex items-center gap-1.5 transition-colors" title="Trộn ngẫu nhiên thẻ">
+            <i class="ph ph-shuffle text-base"></i> Trộn
+          </button>
+        </div>
+      </div>
+
+      <!-- Flashcards Grid -->
+      <div id="flashcards-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Rendered by JS -->
+      </div>
+    </section>
+
+    <!-- TAB 2: MATCHING QUIZ -->
+    <section id="section-matching" class="hidden space-y-6">
+      <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h2 class="text-lg font-bold flex items-center gap-2">
+              <span class="p-2 bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 rounded-lg"><i class="ph ph-target"></i></span>
+              Nối Thuật Ngữ Với Định Nghĩa Chuẩn Xác
+            </h2>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Chọn 1 trong 4 định nghĩa phù hợp nhất với thuật ngữ đang hiển thị.</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="startMatchingQuiz()" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm shadow-sm transition-all flex items-center gap-2">
+              <i class="ph ph-arrow-clockwise"></i> Làm lại lượt mới
+            </button>
+          </div>
+        </div>
+
+        <!-- Progress bar -->
+        <div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+          <div class="flex justify-between text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5">
+            <span>Tiến độ: <span id="match-curr-idx">1</span>/<span id="match-total">10</span> câu</span>
+            <span>Đúng: <span id="match-score" class="text-emerald-500">0</span> điểm</span>
+          </div>
+          <div class="w-full bg-slate-100 dark:bg-slate-800 h-2.5 rounded-full overflow-hidden">
+            <div id="match-progress" class="bg-indigo-600 h-full rounded-full transition-all duration-300" style="width: 10%"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quiz Card -->
+      <div id="matching-quiz-container" class="bg-white dark:bg-slate-900 p-6 md:p-8 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm max-w-3xl mx-auto space-y-6">
+        <!-- Rendered by JS -->
+      </div>
+    </section>
+
+    <!-- TAB 3: FILL IN THE BLANKS -->
+    <section id="section-fill" class="hidden space-y-6">
+      <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h2 class="text-lg font-bold flex items-center gap-2">
+            <span class="p-2 bg-amber-100 dark:bg-amber-950 text-amber-600 dark:text-amber-400 rounded-lg"><i class="ph ph-pen-nib"></i></span>
+            Luyện Điền Từ Vào Chỗ Trống (Fill in the blanks)
+          </h2>
+          <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Gõ từ hoặc bấm "Gợi ý / Trắc nghiệm" để chọn đáp án chính xác.</p>
+        </div>
+        <div class="flex items-center gap-2 flex-wrap">
+          <button onclick="toggleFillMode()" id="fill-mode-btn" class="px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-200 transition-colors">
+            Chế độ: Gõ từ chính xác
+          </button>
+          <button onclick="resetFillQuiz()" class="px-3.5 py-2 rounded-xl bg-indigo-50 dark:bg-indigo-950 hover:bg-indigo-100 text-indigo-600 dark:text-indigo-400 text-xs font-semibold">
+            <i class="ph ph-arrows-counter-clockwise mr-1"></i> Làm lại
+          </button>
+        </div>
+      </div>
+
+      <!-- Fill question card -->
+      <div id="fill-container" class="max-w-3xl mx-auto space-y-6">
+        <!-- Injected by JS -->
+      </div>
+    </section>
+
+    <!-- TAB 4: TRUE / FALSE -->
+    <section id="section-tf" class="hidden space-y-6">
+      <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h2 class="text-lg font-bold flex items-center gap-2">
+            <span class="p-2 bg-purple-100 dark:bg-purple-950 text-purple-600 dark:text-purple-400 rounded-lg"><i class="ph ph-scales"></i></span>
+            Trắc Nghiệm Đúng / Sai (True or False)
+          </h2>
+          <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Đánh giá các mệnh đề kỹ thuật về CNTT, giải thích chi tiết khi chọn sai.</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+            Tổng: 50 câu
+          </span>
+          <button onclick="resetTFQuiz()" class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm">
+            <i class="ph ph-arrow-counter-clockwise"></i> Bắt đầu lại
+          </button>
+        </div>
+      </div>
+
+      <div id="tf-container" class="max-w-3xl mx-auto space-y-6">
+        <!-- Injected by JS -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="mt-auto border-t border-slate-200 dark:border-slate-800 py-6 text-center text-xs text-slate-500">
+    <p>© IT English Revision Hub - Được thiết kế tối ưu cho học tập và thi cử chuyên ngành Công nghệ thông tin.</p>
+  </footer>
+
+  <!-- DATA & JAVASCRIPT LOGIC -->
+  <script>
+    /* ========================================================
+       DATA SOURCES TỪ FILE ÔN TẬP
+       ======================================================== */
+
+    // 1. MATCHING (48 Thuật ngữ và định nghĩa chuẩn)
+    const matchingData = [
+      { term: "A computer", def: "is an electronic machine which can accept data in a certain form, process the data, and give the results of the processing in a specified format as information." },
+      { term: "A clock", def: "controls the timing of signals in the computer." },
+      { term: "A cloud database", def: "is an automated or built-in database for such a virtualized environment." },
+      { term: "A gateway", def: "is an entrance to another network." },
+      { term: "A hub", def: "channels incoming data maintains the bandwidth speed." },
+      { term: "A modem", def: "modulates and demodulates the data into a digital or an analog signal." },
+      { term: "A network topology", def: "is the layout of the interconnections of the nodes of a computer network which depends on the distance involved, the type of hardware used and the stability needed." },
+      { term: "Algorithm", def: "a predetermined set of instructions for solving a specific problem in a limited number of steps." },
+      { term: "Animations", def: "are made up of a series of independent pictures put together in sequence to look like moving pictures." },
+      { term: "Artificial", def: "made by humans, not natural." },
+      { term: "Artificial intelligence", def: "is a broad area of computer science that makes machines seem like they have human intelligence." },
+      { term: "Background", def: "the underlying colors and patterns of a web page." },
+      { term: "Blogging", def: "is a type of online journal in which the user can update daily, share, follow and post comments." },
+      { term: "Bot", def: "a computer program that works automatically, especially one that searches for and finds information on the Internet." },
+      { term: "Browser hijacker", def: "is malicious software that changes a browser's behavior, settings, or appearance without user consent." },
+      { term: "Cache", def: "holds data read or written to it by the processor." },
+      { term: "Cascading Style Sheets", def: "a mechanism for adding styles to web documents." },
+      { term: "Central processing unit (CPU)", def: "controls all the operations in a computer." },
+      { term: "Centralized Database", def: "The data is stored centrally and users from different locations can access this data." },
+      { term: "DBMS", def: "the software used in databases to store, organized and retrieve the data." },
+      { term: "End User Database", def: "a collaborative database that is designed specifically for the end-user as do the managers at various levels." },
+      { term: "Frames", def: "rectangular areas that allow the display of different pages in the same browser window." },
+      { term: "Hard drive", def: "magnetic device used to store information." },
+      { term: "Hardware", def: "is an electronic or mechanic part you can see or touch." },
+      { term: "Hyperlinks", def: "are highlighted texts or pictures (buttons, image maps, etc.) that act as links to other pages." },
+      { term: "Input devices", def: "enable data to go into the computer's memory." },
+      { term: "Instant message", def: "is a kind of service that allows people to send short message for free." },
+      { term: "Java applets", def: "small programs that enable the creation of interactive files." },
+      { term: "Monitor", def: "displays the output from a computer on a screen." },
+      { term: "Nanotechnology", def: "the science of making devices from single atoms and molecules." },
+      { term: "Operating system", def: "is the set of programs between the applications programs and the hardware." },
+      { term: "Password", def: "A secret word that you type into a computer before you use it." },
+      { term: "Peripherals", def: "are the physical units attached to the computer." },
+      { term: "Podcasting", def: "is a free service in which audio only broadcast released on the internet and users can download to listen." },
+      { term: "Ports", def: "sockets into which an external device may be connected." },
+      { term: "Processor", def: "is considered the brain of the computer." },
+      { term: "RAM", def: "provides fast access for sections of a program and its data." },
+      { term: "Ransomware", def: "is malware that employs encryption to hold a victim's information at ransom." },
+      { term: "ROM", def: "hold instructions which are needed to start up the computer." },
+      { term: "Software", def: "a set of instructions, called a program, which tells the computer what to do." },
+      { term: "Spyware", def: "software that enables a user to obtain convert information about another's computer activities by transmitting data covertly from their hard drive." },
+      { term: "Tags", def: "are placed around pieces of text to tell the web browser how to display text or pictures." },
+      { term: "Teleworking", def: "the practice of working at home and communicating with the office by phone and computer." },
+      { term: "Trojan", def: "is a type of malicious code or software that can take control of your computer." },
+      { term: "Video casting", def: "is a type of communication in which videos are created and uploaded to a website like Youtube." },
+      { term: "Video conferencing", def: "refers to a set of technologies that allow a person to make a video call to one or more people at the same time." },
+      { term: "Visitor map", def: "information about where the visitors to your site are from." },
+      { term: "VOIP", def: "is a service to make telephone calls over the internet rather than through the traditional telephone or cell phone networks." }
+    ];
+
+    // 2. FILL IN THE BLANKS (Phần II - 50 câu)
+    const fillData = [
+      { answer: "Wearables", sentence: "_____ are designed to be worn on the body or integrated into the user's clothing." },
+      { answer: "Adware", sentence: "_____ is software that displays unwanted advertisements on your computer." },
+      { answer: "Ransomware", sentence: "_____ is a type of malware that prevents you from using your computer or accessing specific files on your computer unless a ransom is paid." },
+      { answer: "operating system", sentence: "An _____ has three main functions: manage the computer's resources, establish a user interface, and execute and provide services for applications software." },
+      { answer: "Electronic communication", sentence: "_____ is fast, flexible, and convenient, but these attributes contain inherent disadvantages." },
+      { answer: "Output devices", sentence: "_____ enable us to extract the finish product from the system." },
+      { answer: "Backup", sentence: "_____ means copying data to another place so that you don't lose it." },
+      { answer: "Software", sentence: "_____ is a set of instructions, called a program, which tells the computer what to do." },
+      { answer: "database", sentence: "A _____ can manage any type of data, including text, numbers, images, sound and video and hyperlinks (links to websites)." },
+      { answer: "LAN", sentence: "A _____ connects computers over a relatively short distance, allowing them to share data, files, and resources." },
+      { answer: "distributed database", sentence: "A _____ in which various parts of a database are located in different physical locations along with databases replicated and distributed between different points in a network can be imagined." },
+      { answer: "network topology", sentence: "A _____ is the layout of the interconnections of the nodes of a computer network." },
+      { answer: "record", sentence: "A _____ about an employee might consist of several fields which give their name, address, phone number, date of birth, salary and length of employment." },
+      { answer: "Artificial Intelligence", sentence: "_____ is slowly making progress, but it could soon evolve into a new trend in technology." },
+      { answer: "telecommunications", sentence: "But in the modern world, _____ mainly means transferring information across the Internet, via modem, phone lines or wireless networks." },
+      { answer: "email", sentence: "By using _____ one can send a message to another person through a mail immediately." },
+      { answer: "passwords", sentence: "Don't use common words or numbers as _____ such as birthdays or names of your children." },
+      { answer: "transversely", sentence: "Due to the advancement of electronic media, business managers can effortlessly manage business _____ the world." },
+      { answer: "Electronic communication", sentence: "_____ can be classified into different types like messaging, voice call, e-mail, etc." },
+      { answer: "Hackers", sentence: "_____ try to trick email recipients into believing that a message is genuine and relevant - a request from their bank or a note from a co-worker." },
+      { answer: "Heterogeneous and homogenous", sentence: "_____ are the two kinds of distribution of your information, not what format the actual data is." },
+      { answer: "HTML", sentence: "_____ is a language that is all about the structure." },
+      { answer: "Adobe Flash", sentence: "If you want to inject something special into your web pages, you can use _____ to include animations and streaming audio." },
+      { answer: "RSS feeds", sentence: "If you want to share information with people, you can use _____ and provide readers with a link to the feed." },
+      { answer: "bus", sentence: "In _____ network all nodes are connected to a common medium, call backbone, as it happens with Christmas lights." },
+      { answer: "star", sentence: "In a _____ network all nodes are connected to a common medium, call backbone, as it happens with Christmas lights." },
+      { answer: "AI", sentence: "In basic terms, _____ is a broad area of computer science that makes machines seem like they have human intelligence." },
+      { answer: "broadcasting", sentence: "In recent years, TV and radio _____ has been revolutionized by developments in satellite transmission." },
+      { answer: "smart home", sentence: "In the ideal _____, appliances and electronic devices work together to keep the house secure." },
+      { answer: "pets", sentence: "In the near future we may have _____, with video camera eyes and microphone ears, linked by radio to the family computer." },
+      { answer: "Instant messaging", sentence: "_____ is a service, like SMS, that allows people to send short messages using their mobiles phones (or computers)." },
+      { answer: "human", sentence: "Like _____, a system retains information and becomes smarter over time." },
+      { answer: "Netflix and Google", sentence: "_____ have already announced that they would be reducing video streaming quality in Europe for a month from high definition (HD) to standard definition (SD)." },
+      { answer: "Neural networks", sentence: "_____ help solve the problem of providing higher revenue at lower costs." },
+      { answer: "Neural networks", sentence: "_____, also called artificial neural networks, are ways of achieving deep learning." },
+      { answer: "unauthorized", sentence: "No _____ user can access the information." },
+      { answer: "virtualized environment", sentence: "Nowadays, data are actually stored in a public cloud, a hybrid cloud or a private cloud, also known as a _____." },
+      { answer: "WLANs", sentence: "On the other hand, _____ may be difficult to set up and may be insecure as computer hackers can send viruses or computer worms to the net computer." },
+      { answer: "processing speeds", sentence: "Thanks to advances in _____, AI can actually make sense of all this information more quickly." },
+      { answer: "robots", sentence: "Thanks to books and movies, each generation has formed its own fantasy of a world ruled or at least served by _____." },
+      { answer: "virtual servers", sentence: "The processing of large-size, unstructured information can be done very efficiently on several cloud _____." },
+      { answer: "protocols", sentence: "The routing of information in a network is controlled by communications _____, which define the formats and rules that computers must follow." },
+      { answer: "database", sentence: "The best _____ packages also include network facilities, which can make business more productive." },
+      { answer: "operating system", sentence: "The role of the _____ is to interact directly with the hardware." },
+      { answer: "hardware", sentence: "There are three basic _____ sections: the central processing unit (CPU), main memory and peripherals." },
+      { answer: "token", sentence: "There is no central hub that holds all the data, and communication is sent in one direction around the ring through the use of a _____." },
+      { answer: "human speech syntax", sentence: "When you ask Siri or Cortana where the closest gas station is, it's really translating your voice into text and read the answer back in _____." },
+      { answer: "MNOs", sentence: "While people are mostly using home WiFi, they would still use their mobile phones for voice calls and this is the area that _____ need to keep a close eye on." },
+      { answer: "mobile data traffic", sentence: "With the potential congestion of fixed broadband service, there is a chance that devices will fall back on mobile networks, causing a significant surge of _____." }
+    ];
+
+    // 3. TRUE / FALSE DATA (Phần III - 50 câu)
+    const tfData = [
+      { q: "A cloud database is an automated or built-in database for such a virtualized environment.", a: true, exp: "Đúng theo định nghĩa cloud database." },
+      { q: "A cloud database is used for large data sets.", a: true, exp: "Cloud database được thiết kế để xử lý và lưu trữ dữ liệu lớn với khả năng mở rộng cao." },
+      { q: "A cloud service offers various advantages, including the ability to pay per user storage capacity and bandwidth and provides scalability on request, as well as low availability.", a: false, exp: "Sai vì Cloud service mang lại tính sẵn sàng cao (high availability), không phải 'low availability'." },
+      { q: "A database query function allows you to extract information according to certain conditions or criteria.", a: true, exp: "Chức năng truy vấn (query) trích xuất dữ liệu thỏa mãn điều kiện nhất định." },
+      { q: "A field is a group of records holding large amount of information.", a: false, exp: "Sai: Record mới là tập hợp các field, còn Table hoặc Database mới là group of records." },
+      { q: "A LAN connects computers in an office building, school, over a relatively long distance.", a: false, exp: "Sai: LAN (Local Area Network) chỉ kết nối ở khoảng cách ngắn (short distance)." },
+      { q: "A mainframe computer is less powerful than a PC.", a: false, exp: "Sai: Mainframe computer mạnh hơn rất nhiều so với PC." },
+      { q: "A mainframe computer is more powerful than a PC.", a: true, exp: "Đúng: Máy tính lớn (mainframe) có năng lực tính toán vượt trội so với PC." },
+      { q: "A mainframe is used by large organizations that need to process great amount of data.", a: true, exp: "Đúng: Doanh nghiệp, ngân hàng lớn dùng mainframe xử lý lượng dữ liệu khổng lồ." },
+      { q: "A mainframe is used by large organizations that need to process small amount of data.", a: false, exp: "Sai: Mainframe dùng cho khối lượng dữ liệu khổng lồ (great amount), không phải 'small amount'." },
+      { q: "A MAN is a specialized network that provides access to block-level storage shared network or cloud storage that, to the user, looks and works like a storage drive that's physically attached to a computer.", a: false, exp: "Sai: Đây là định nghĩa của SAN (Storage Area Network), không phải MAN (Metropolitan Area Network)." },
+      { q: "A Personal Database is an automated or built-in database for such a virtualized environment.", a: false, exp: "Sai: Đây là định nghĩa của Cloud database, không phải Personal database." },
+      { q: "A Personal Digital Assistant is small enough to fit into the palm of your hand.", a: true, exp: "Đúng: PDA (thiết bị kỹ thuật số cá nhân) nhỏ gọn nằm vừa lòng bàn tay." },
+      { q: "A VPN establishes an encrypted channel that keeps a user's identity and access credentials, as well as any data transferred, inaccessible to hackers.", a: true, exp: "Đúng: VPN mã hóa đường truyền bảo vệ an toàn danh tính và dữ liệu." },
+      { q: "A Web Application Firewall (WAF) which updates a threat database in real-time is one of the effective ways to filter application input to protect against code injection.", a: true, exp: "Đúng: WAF lọc đầu vào chống SQLi, XSS hiệu quả." },
+      { q: "A wireless access point allows wireless devices to connect to the network.", a: true, exp: "Đúng: Access Point (WAP) cho phép thiết bị không dây truy cập mạng LAN." },
+      { q: "Animations are placed around pieces of text to tell the web browser how to display text or pictures.", a: false, exp: "Sai: Đây là định nghĩa của 'Tags' (thẻ HTML), không phải Animations." },
+      { q: "Background means the underlying colors and patterns of a web page.", a: true, exp: "Đúng: Background là màu nền hoặc họa tiết bên dưới của trang web." },
+      { q: "Centralized Database are the paid versions of the enormous databases, designed for users who wish to access the information for assistance.", a: false, exp: "Sai: Định nghĩa này thuộc về Commercial database." },
+      { q: "Digital TV is a way of transmitting pictures by means of digital signals, in contrast to the analogue signals used by traditional TV.", a: true, exp: "Đúng: Truyền hình số truyền dữ liệu bằng tín hiệu digital thay vì analog." },
+      { q: "E-mail, telephone, video calling, FAX machine are typically used to transmit information in electronic communication.", a: true, exp: "Đúng: Đây đều là phương tiện truyền tin điện tử." },
+      { q: "Hackers are always looking to exploit a private network or system's vulnerabilities so they can steal confidential information and data.", a: true, exp: "Đúng: Tin tặc luôn tìm cách khai thác lỗ hổng bảo mật." },
+      { q: "Hardware is any physical part of the computer which includes the internal components and the external parts like the monitor and printer.", a: true, exp: "Đúng: Phần cứng là toàn bộ các bộ phận vật lý trong và ngoài máy tính." },
+      { q: "If you want to protect your PC, don't open email attachments from strangers and take care when downloading files from the Web.", a: true, exp: "Đúng: Quy tắc an toàn hàng đầu để phòng chống mã độc." },
+      { q: "If you want to send instant messages on Facebook Messenger, Whatsapp or Snapchat, you will be charged a large amount of fee.", a: false, exp: "Sai: Instant messages qua các ứng dụng OTT này đều hoàn toàn miễn phí (chỉ tốn cước internet thông thường)." },
+      { q: "If your computer is attacked by ransomware, you don't have to pay any ransom to unlock your screen and your files.", a: false, exp: "Sai: Ransomware là mã độc tống tiền, nó yêu cầu nạn nhân phải trả tiền chuộc (ransom) để mở khóa." },
+      { q: "In a star bus network, each node is connected to its left in a circle.", a: false, exp: "Sai: Kết nối theo hình tròn nối tiếp nhau là cấu trúc Ring (Ring network), không phải Star bus." },
+      { q: "In distribution database, the data is stored centrally and user from various locations can access this data.", a: false, exp: "Sai: Đây là đặc điểm của Centralized Database, còn Distributed database lưu trữ phân tán ở nhiều nơi." },
+      { q: "Instant message is a kind of service that allows people to send short message for free.", a: true, exp: "Đúng theo định nghĩa trong tài liệu." },
+      { q: "Instant messages are sent for free over the internet and can contain multimedia items like emoji, pictures, videos and voice recordings.", a: true, exp: "Đúng: Tin nhắn tức thời hỗ trợ gửi đa phương tiện miễn phí qua internet." },
+      { q: "Malware attack is malicious software that changes a browser's behavior, settings, or appearance without user consent.", a: false, exp: "Sai: Đây là định nghĩa của 'Browser hijacker'." },
+      { q: "MANs are typically bigger than LANs but smaller and WANS.", a: true, exp: "Đúng: Độ phủ địa lý: LAN < MAN < WAN." },
+      { q: "Meta tag is invisible information (e.g. a hidden keyword) on a website.", a: true, exp: "Đúng: Meta tag chứa siêu dữ liệu ẩn trong mã HTML." },
+      { q: "Neural networks are used to convert handwritten characters into digital characters that a machine can recognize.", a: true, exp: "Đúng: Mạng nơ-ron được dùng trong nhận dạng chữ viết tay (OCR)." },
+      { q: "Peripherals are the physical units attached to the computer. They include storage devices and input/output devices.", a: true, exp: "Đúng: Thiết bị ngoại vi bao gồm thiết bị lưu trữ và vào/ra." },
+      { q: "Phishing is a cyber-attack in which phishing emails are sent to gather users' login information.", a: true, exp: "Đúng: Phishing là hình thức tấn công lừa đảo qua email để đánh cắp thông tin tài khoản." },
+      { q: "Private networks can't be attacked by intruders who attempt to obtain information such as Social Security numbers, bank accounts or research and business reports.", a: false, exp: "Sai: Mạng riêng tư (Private networks) hoàn toàn có nguy cơ bị tấn công và thâm nhập nếu có lỗ hổng." },
+      { q: "Relational database is the database which is made up of related files.", a: true, exp: "Đúng: Cơ sở dữ liệu quan hệ tổ chức dữ liệu thành các bảng/tệp liên kết." },
+      { q: "Systems Administrators, Network Administrators, or anyone who has anything to do with cybersecurity will also be under a great deal of stress.", a: true, exp: "Đúng: Quản trị viên hệ thống & an ninh mạng luôn chịu áp lực công việc rất lớn." },
+      { q: "Tech professionals are not required to constantly keep themselves up-to-date on the latest trends and developments.", a: false, exp: "Sai: Nhân sự công nghệ bắt buộc phải liên tục cập nhật công nghệ và xu hướng mới." },
+      { q: "Thanks to electronic communication, mobile phones now let you check your email, browse the Web and connect with home or company intranets, all without wire.", a: true, exp: "Đúng: Giao tiếp điện tử và di động giúp truy cập mọi dịch vụ không dây." },
+      { q: "The analysis of large-size, unstructured information can't be done very efficiently on several cloud virtual servers.", a: false, exp: "Sai: Điện toán đám mây cho phép xử lý dữ liệu phi cấu trúc lớn RẤT hiệu quả ('can be done efficiently')." },
+      { q: "The connection between devices of WLAN and LAN are the same.", a: true, exp: "Đúng: Cùng kiến trúc logic kết nối mạng nội bộ (WLAN dùng sóng vô tuyến, LAN dùng cáp)." },
+      { q: "The network starts with an input layer that receives output in the form of data.", a: false, exp: "Sai: Tầng đầu vào nhận input (đầu vào), không thể 'receives output'." },
+      { q: "Vlogging and Blogging are similar in delivering informal styles, however, with Vlogging, Vloggers can post videos.", a: true, exp: "Đúng: Vlogging truyền tải nội dung bằng video." },
+      { q: "VOIP allows voice and multimedia data to be transferred across a data network.", a: true, exp: "Đúng: VOIP truyền giọng nói và dữ liệu qua mạng IP/Internet." }
+    ];
+
+    /* ========================================================
+       STATE MANAGEMENT
+       ======================================================== */
+    let currentTab = 'flashcards';
+    let flippedCards = {};
+    let globalScore = 0;
+
+    // Matching state
+    let matchQuestions = [];
+    let matchCurrentIndex = 0;
+    let matchScore = 0;
+
+    // Fill state
+    let fillMode = 'type'; // 'type' | 'choice'
+    let fillCurrentIndex = 0;
+    let fillQuestions = [...fillData];
+    let fillCorrectCount = 0;
+
+    // TF state
+    let tfCurrentIndex = 0;
+    let tfQuestions = [...tfData];
+    let tfCorrectCount = 0;
+
+    /* ========================================================
+       TABS SWITCHING
+       ======================================================== */
+    function switchTab(tab) {
+      currentTab = tab;
+      const tabs = ['flashcards', 'matching', 'fill', 'tf'];
+      tabs.forEach(t => {
+        const btn = document.getElementById(`tab-${t}`);
+        const sec = document.getElementById(`section-${t}`);
+        if (t === tab) {
+          btn.className = "nav-tab active-tab px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all flex items-center gap-2 bg-indigo-600 text-white shadow-md shadow-indigo-500/20";
+          sec.classList.remove('hidden');
+        } else {
+          btn.className = "nav-tab px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800";
+          sec.classList.add('hidden');
+        }
+      });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    /* ========================================================
+       TAB 1: FLASHCARDS
+       ======================================================== */
+    let activeFlashcards = [...matchingData];
+
+    function renderFlashcards() {
+      const grid = document.getElementById('flashcards-grid');
+      const keyword = (document.getElementById('fc-search').value || '').trim().toLowerCase();
+
+      const filtered = activeFlashcards.filter(item => 
+        item.term.toLowerCase().includes(keyword) || item.def.toLowerCase().includes(keyword)
+      );
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full py-16 text-center text-slate-400">
+            <i class="ph ph-magnifying-glass text-4xl mb-2"></i>
+            <p>Không tìm thấy thuật ngữ phù hợp với "${keyword}"</p>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = filtered.map((item, index) => {
+        const isFlipped = !!flippedCards[item.term];
+        return `
+          <div class="h-64 cursor-pointer perspective-1000 group select-none" onclick="flipCard('${item.term.replace(/'/g, "\\'")}')">
+            <div id="card-inner-${index}" class="relative w-full h-full duration-500 transform-style-preserve-3d transition-transform rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 ${isFlipped ? 'rotate-y-180' : ''}">
+              
+              <!-- FRONT (Term) -->
+              <div class="absolute inset-0 w-full h-full bg-white dark:bg-slate-900 rounded-2xl p-6 flex flex-col justify-between backface-hidden border-2 border-transparent group-hover:border-indigo-400/50 transition-all">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-mono font-semibold px-2.5 py-1 rounded-md bg-indigo-50 dark:bg-indigo-950/70 text-indigo-600 dark:text-indigo-400">#${index + 1}</span>
+                  <button onclick="event.stopPropagation(); speakTerm('${item.term.replace(/'/g, "\\'")}')" class="p-2 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors" title="Phát âm">
+                    <i class="ph ph-speaker-high text-lg"></i>
+                  </button>
+                </div>
+                <div class="text-center my-auto px-2">
+                  <h3 class="text-xl font-bold text-slate-800 dark:text-slate-100 tracking-tight leading-snug">${item.term}</h3>
+                  <p class="text-xs text-indigo-500 mt-2 font-medium">Bấm để xem định nghĩa ↻</p>
+                </div>
+                <div class="text-right text-[11px] text-slate-400 flex items-center justify-end gap-1">
+                  <i class="ph ph-arrow-arc-right"></i> Lật thẻ
+                </div>
+              </div>
+
+              <!-- BACK (Definition) -->
+              <div class="absolute inset-0 w-full h-full bg-gradient-to-br from-indigo-900 to-slate-900 text-white rounded-2xl p-6 flex flex-col justify-between backface-hidden rotate-y-180 shadow-inner">
+                <div class="flex items-center justify-between border-b border-indigo-700/50 pb-2">
+                  <span class="text-xs font-semibold text-indigo-300">${item.term}</span>
+                  <span class="text-[11px] bg-indigo-500/30 text-indigo-200 px-2 py-0.5 rounded">Định nghĩa</span>
+                </div>
+                <div class="my-auto overflow-y-auto max-h-36 pr-1">
+                  <p class="text-sm font-normal text-slate-100 leading-relaxed">${item.def}</p>
+                </div>
+                <div class="text-left text-[11px] text-indigo-300 flex items-center gap-1 pt-2 border-t border-indigo-700/50">
+                  <i class="ph ph-arrow-arc-left"></i> Bấm để lật lại
+                </div>
+              </div>
+
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function flipCard(term) {
+      flippedCards[term] = !flippedCards[term];
+      renderFlashcards();
+    }
+
+    function shuffleFlashcards() {
+      activeFlashcards.sort(() => Math.random() - 0.5);
+      flippedCards = {};
+      renderFlashcards();
+    }
+
+    function speakTerm(text) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.9;
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    /* ========================================================
+       TAB 2: MATCHING QUIZ
+       ======================================================== */
+    function startMatchingQuiz() {
+      matchScore = 0;
+      matchCurrentIndex = 0;
+      const shuffledTerms = [...matchingData].sort(() => Math.random() - 0.5);
+      matchQuestions = shuffledTerms.slice(0, 15).map(item => {
+        // Lấy 3 đáp án sai ngẫu nhiên
+        const wrongOptions = matchingData
+          .filter(d => d.term !== item.term)
+          .sort(() => Math.random() - 0.5)
+          .slice(0, 3)
+          .map(d => d.def);
+        
+        const options = [item.def, ...wrongOptions].sort(() => Math.random() - 0.5);
+        return {
+          term: item.term,
+          correctDef: item.def,
+          options: options,
+          selected: null,
+          isCorrect: null
+        };
+      });
+
+      renderMatchingQuestion();
+    }
+
+    function renderMatchingQuestion() {
+      const container = document.getElementById('matching-quiz-container');
+      const q = matchQuestions[matchCurrentIndex];
+      const total = matchQuestions.length;
+
+      document.getElementById('match-curr-idx').innerText = matchCurrentIndex + 1;
+      document.getElementById('match-total').innerText = total;
+      document.getElementById('match-score').innerText = matchScore;
+      document.getElementById('match-progress').style.width = `${((matchCurrentIndex + 1) / total) * 100}%`;
+
+      if (!q) {
+        renderMatchingResult();
+        return;
+      }
+
+      const answered = q.selected !== null;
+
+      container.innerHTML = `
+        <div class="space-y-4">
+          <div class="flex items-center justify-between">
+            <span class="text-xs uppercase tracking-wider font-bold text-indigo-600 dark:text-indigo-400">Câu ${matchCurrentIndex + 1} trên ${total}</span>
+            <button onclick="speakTerm('${q.term.replace(/'/g, "\\'")}')" class="text-slate-400 hover:text-indigo-600 flex items-center gap-1 text-xs">
+              <i class="ph ph-speaker-high text-base"></i> Phát âm
+            </button>
+          </div>
+
+          <div class="bg-indigo-50 dark:bg-slate-800/80 p-5 rounded-2xl border border-indigo-100 dark:border-slate-700 text-center">
+            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium mb-1">Thuật ngữ cần ghép:</p>
+            <h3 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">${q.term}</h3>
+          </div>
+
+          <p class="text-sm font-semibold text-slate-700 dark:text-slate-300 pt-2">Chọn định nghĩa phù hợp nhất:</p>
+
+          <div class="grid grid-cols-1 gap-3">
+            ${q.options.map((opt, optIndex) => {
+              let btnClass = "p-4 text-left rounded-xl border text-sm transition-all ";
+              if (!answered) {
+                btnClass += "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-indigo-500 hover:bg-indigo-50/40 dark:hover:bg-slate-700/50 cursor-pointer";
+              } else {
+                if (opt === q.correctDef) {
+                  btnClass += "bg-emerald-50 dark:bg-emerald-950/60 border-emerald-500 text-emerald-800 dark:text-emerald-200 font-semibold ring-2 ring-emerald-500/20";
+                } else if (opt === q.selected && !q.isCorrect) {
+                  btnClass += "bg-rose-50 dark:bg-rose-950/60 border-rose-500 text-rose-800 dark:text-rose-200 font-medium ring-2 ring-rose-500/20";
+                } else {
+                  btnClass += "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 opacity-50 cursor-not-allowed";
+                }
+              }
+
+              return `
+                <button ${answered ? 'disabled' : ''} onclick="submitMatchingAnswer(${optIndex})" class="${btnClass}">
+                  <div class="flex items-start gap-3">
+                    <span class="w-6 h-6 rounded-lg bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-xs font-bold text-slate-600 dark:text-slate-300 shrink-0">
+                      ${['A', 'B', 'C', 'D'][optIndex]}
+                    </span>
+                    <span class="flex-1">${opt}</span>
+                    ${answered && opt === q.correctDef ? '<i class="ph-fill ph-check-circle text-emerald-500 text-xl shrink-0"></i>' : ''}
+                    ${answered && opt === q.selected && !q.isCorrect ? '<i class="ph-fill ph-x-circle text-rose-500 text-xl shrink-0"></i>' : ''}
+                  </div>
+                </button>
+              `;
+            }).join('')}
+          </div>
+
+          ${answered ? `
+            <div class="flex justify-end pt-4">
+              <button onclick="nextMatchingQuestion()" class="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm shadow-md shadow-indigo-600/30 flex items-center gap-2">
+                ${matchCurrentIndex < total - 1 ? 'Câu tiếp theo <i class="ph ph-arrow-right font-bold"></i>' : 'Xem tổng kết <i class="ph ph-trophy font-bold"></i>'}
+              </button>
+            </div>
+          ` : ''}
+        </div>
+      `;
+    }
+
+    function submitMatchingAnswer(optionIndex) {
+      const q = matchQuestions[matchCurrentIndex];
+      const chosen = q.options[optionIndex];
+      q.selected = chosen;
+      q.isCorrect = (chosen === q.correctDef);
+
+      if (q.isCorrect) {
+        matchScore += 10;
+        addGlobalScore(10);
+      }
+      renderMatchingQuestion();
+    }
+
+    function nextMatchingQuestion() {
+      matchCurrentIndex++;
+      if (matchCurrentIndex < matchQuestions.length) {
+        renderMatchingQuestion();
+      } else {
+        renderMatchingResult();
+      }
+    }
+
+    function renderMatchingResult() {
+      const total = matchQuestions.length;
+      const correctNum = matchQuestions.filter(q => q.isCorrect).length;
+      const pct = Math.round((correctNum / total) * 100);
+
+      if (pct >= 80) triggerConfetti();
+
+      const container = document.getElementById('matching-quiz-container');
+      container.innerHTML = `
+        <div class="text-center py-6 space-y-4">
+          <div class="w-16 h-16 mx-auto rounded-2xl bg-indigo-100 dark:bg-indigo-950 flex items-center justify-center text-indigo-600 text-3xl font-bold">
+            <i class="ph ph-trophy"></i>
+          </div>
+          <h3 class="text-2xl font-bold">Hoàn Thành Ghép Thuật Ngữ!</h3>
+          <p class="text-sm text-slate-500 dark:text-slate-400">Bạn đã trả lời đúng <strong class="text-emerald-500">${correctNum}/${total}</strong> câu (${pct}%)</p>
+          
+          <div class="max-w-xs mx-auto py-3">
+            <div class="w-full bg-slate-200 dark:bg-slate-700 h-3 rounded-full overflow-hidden">
+              <div class="bg-indigo-600 h-full rounded-full" style="width: ${pct}%"></div>
+            </div>
+          </div>
+
+          <div class="pt-4 flex justify-center gap-3">
+            <button onclick="startMatchingQuiz()" class="px-5 py-2.5 rounded-xl bg-indigo-600 text-white font-semibold text-sm hover:bg-indigo-700 shadow-md">
+              Làm lại bài mới
+            </button>
+            <button onclick="switchTab('fill')" class="px-5 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-semibold text-sm hover:bg-slate-200">
+              Sang phần Điền từ
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    /* ========================================================
+       TAB 3: FILL IN THE BLANKS
+       ======================================================== */
+    function resetFillQuiz() {
+      fillQuestions = [...fillData].sort(() => Math.random() - 0.5);
+      fillCurrentIndex = 0;
+      fillCorrectCount = 0;
+      renderFillQuestion();
+    }
+
+    function toggleFillMode() {
+      fillMode = (fillMode === 'type') ? 'choice' : 'type';
+      document.getElementById('fill-mode-btn').innerText = (fillMode === 'type') ? "Chế độ: Gõ từ chính xác" : "Chế độ: Chọn 4 đáp án";
+      renderFillQuestion();
+    }
+
+    function renderFillQuestion() {
+      const container = document.getElementById('fill-container');
+      const q = fillQuestions[fillCurrentIndex];
+      const total = fillQuestions.length;
+
+      if (!q) {
+        container.innerHTML = `
+          <div class="bg-white dark:bg-slate-900 p-8 rounded-2xl text-center space-y-4 border border-slate-200 dark:border-slate-800">
+            <h3 class="text-2xl font-bold">Chúc mừng! Bạn đã hoàn thành toàn bộ 50 câu điền từ!</h3>
+            <p class="text-slate-500">Đúng: ${fillCorrectCount}/${total} câu</p>
+            <button onclick="resetFillQuiz()" class="px-5 py-2.5 bg-indigo-600 text-white font-semibold rounded-xl">Làm lại từ đầu</button>
+          </div>
+        `;
+        return;
+      }
+
+      // Tạo câu khuyết hiển thị
+      const displaySentence = q.sentence.replace("_____", `<span class="inline-block px-3 py-1 bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 font-mono font-bold rounded-lg border border-amber-300 dark:border-amber-700/60 mx-1">_____</span>`);
+
+      // 4 phương án nếu là mode choice
+      let choiceButtons = "";
+      if (fillMode === 'choice') {
+        const wrongAnswers = fillData
+          .filter(item => item.answer.toLowerCase() !== q.answer.toLowerCase())
+          .map(item => item.answer)
+          .filter((v, i, a) => a.indexOf(v) === i)
+          .sort(() => Math.random() - 0.5)
+          .slice(0, 3);
+        const allChoices = [q.answer, ...wrongAnswers].sort(() => Math.random() - 0.5);
+
+        choiceButtons = `
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-3">
+            ${allChoices.map((choice, idx) => `
+              <button onclick="checkFillChoice('${choice.replace(/'/g, "\\'")}')" class="p-3 text-left rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-amber-500 hover:bg-amber-50/30 text-sm font-semibold transition-all">
+                <span class="text-xs text-slate-400 mr-1.5">${['A','B','C','D'][idx]}.</span> ${choice}
+              </button>
+            `).join('')}
+          </div>
+        `;
+      }
+
+      container.innerHTML = `
+        <div class="bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-5">
+          <div class="flex items-center justify-between text-xs font-semibold text-slate-500 dark:text-slate-400 border-b border-slate-100 dark:border-slate-800 pb-3">
+            <span class="px-2.5 py-1 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold">Câu ${fillCurrentIndex + 1} / ${total}</span>
+            <span>Đã đúng: <strong class="text-emerald-500">${fillCorrectCount}</strong> câu</span>
+          </div>
+
+          <div class="text-base sm:text-lg leading-relaxed text-slate-800 dark:text-slate-100 font-medium">
+            ${displaySentence}
+          </div>
+
+          ${fillMode === 'type' ? `
+            <div class="space-y-3 pt-2">
+              <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500">Nhập từ/cụm từ khuyết vào đây:</label>
+              <div class="flex gap-2">
+                <input type="text" id="fill-input" placeholder="Ví dụ: Wearables, LAN, Software..." autocomplete="off" class="flex-1 px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm font-semibold dark:text-white" onkeydown="if(event.key === 'Enter') checkFillTyped()" />
+                <button onclick="checkFillTyped()" class="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-sm shadow-md transition-all">Kiểm tra</button>
+              </div>
+              <div class="flex items-center gap-2 text-xs text-slate-500">
+                <button onclick="giveFillHint()" class="text-indigo-500 hover:underline flex items-center gap-1">
+                  <i class="ph ph-lightbulb"></i> Gợi ý chữ cái đầu
+                </button>
+                <span>•</span>
+                <span id="fill-hint-text" class="text-slate-400 italic font-mono"></span>
+              </div>
+            </div>
+          ` : choiceButtons}
+
+          <!-- Feedback notification block -->
+          <div id="fill-feedback" class="hidden p-4 rounded-xl text-sm font-medium"></div>
+
+          <div id="fill-next-btn-wrap" class="hidden flex justify-end pt-2">
+            <button onclick="nextFillQuestion()" class="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm flex items-center gap-2">
+              Câu tiếp theo <i class="ph ph-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+      `;
+
+      if (fillMode === 'type') {
+        setTimeout(() => {
+          const inp = document.getElementById('fill-input');
+          if (inp) inp.focus();
+        }, 50);
+      }
+    }
+
+    function giveFillHint() {
+      const q = fillQuestions[fillCurrentIndex];
+      const hint = `Bắt đầu bằng: "${q.answer.slice(0, 2)}..." (${q.answer.length} ký tự)`;
+      document.getElementById('fill-hint-text').innerText = hint;
+    }
+
+    function checkFillTyped() {
+      const input = document.getElementById('fill-input');
+      if (!input) return;
+      const userVal = input.value.trim().toLowerCase();
+      const q = fillQuestions[fillCurrentIndex];
+      const correctVal = q.answer.trim().toLowerCase();
+
+      // Kiểm tra gần đúng (loại bỏ s thừa hoặc mạo từ đơn giản nếu có)
+      const isCorrect = (userVal === correctVal);
+      showFillFeedback(isCorrect, q.answer);
+    }
+
+    function checkFillChoice(selectedChoice) {
+      const q = fillQuestions[fillCurrentIndex];
+      const isCorrect = (selectedChoice.trim().toLowerCase() === q.answer.trim().toLowerCase());
+      showFillFeedback(isCorrect, q.answer);
+    }
+
+    function showFillFeedback(isCorrect, rightAnswer) {
+      const fb = document.getElementById('fill-feedback');
+      const nextBtn = document.getElementById('fill-next-btn-wrap');
+      fb.classList.remove('hidden');
+      nextBtn.classList.remove('hidden');
+
+      if (isCorrect) {
+        fb.className = "p-4 rounded-xl text-sm font-medium bg-emerald-50 dark:bg-emerald-950/70 border border-emerald-300 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200 flex items-center gap-2.5";
+        fb.innerHTML = `<i class="ph-fill ph-check-circle text-xl text-emerald-600"></i> <span>Chính xác tuyệt vời! Đáp án là: <strong>${rightAnswer}</strong></span>`;
+        fillCorrectCount++;
+        addGlobalScore(10);
+      } else {
+        fb.className = "p-4 rounded-xl text-sm font-medium bg-rose-50 dark:bg-rose-950/70 border border-rose-300 dark:border-rose-800 text-rose-800 dark:text-rose-200 flex items-center gap-2.5";
+        fb.innerHTML = `<i class="ph-fill ph-x-circle text-xl text-rose-600"></i> <span>Chưa chính xác! Đáp án đúng chuẩn là: <strong class="underline">${rightAnswer}</strong></span>`;
+      }
+    }
+
+    function nextFillQuestion() {
+      fillCurrentIndex++;
+      renderFillQuestion();
+    }
+
+    /* ========================================================
+       TAB 4: TRUE / FALSE
+       ======================================================== */
+    function resetTFQuiz() {
+      tfQuestions = [...tfData].sort(() => Math.random() - 0.5);
+      tfCurrentIndex = 0;
+      tfCorrectCount = 0;
+      renderTFQuestion();
+    }
+
+    function renderTFQuestion() {
+      const container = document.getElementById('tf-container');
+      const q = tfQuestions[tfCurrentIndex];
+      const total = tfQuestions.length;
+
+      if (!q) {
+        const pct = Math.round((tfCorrectCount / total) * 100);
+        if (pct >= 80) triggerConfetti();
+        container.innerHTML = `
+          <div class="bg-white dark:bg-slate-900 p-8 rounded-2xl text-center space-y-4 border border-slate-200 dark:border-slate-800">
+            <div class="w-16 h-16 mx-auto rounded-full bg-purple-100 dark:bg-purple-950 flex items-center justify-center text-purple-600 text-3xl">
+              <i class="ph ph-medal"></i>
+            </div>
+            <h3 class="text-2xl font-bold">Hoàn Thành Toàn Bộ 50 Câu Đúng / Sai!</h3>
+            <p class="text-slate-500">Kết quả: <strong class="text-emerald-500">${tfCorrectCount}</strong> / ${total} câu đúng (${pct}%)</p>
+            <button onclick="resetTFQuiz()" class="px-5 py-2.5 bg-indigo-600 text-white font-semibold rounded-xl">Luyện lại</button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = `
+        <div class="bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-6">
+          <div class="flex items-center justify-between text-xs font-semibold text-slate-500 dark:text-slate-400 border-b border-slate-100 dark:border-slate-800 pb-3">
+            <span class="px-2.5 py-1 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold">Câu ${tfCurrentIndex + 1} / ${total}</span>
+            <span>Số câu đúng: <strong class="text-emerald-500">${tfCorrectCount}</strong></span>
+          </div>
+
+          <div class="bg-slate-50 dark:bg-slate-800/60 p-5 rounded-xl border border-slate-100 dark:border-slate-700">
+            <p class="text-xs uppercase font-bold text-slate-400 mb-2 tracking-wider">Mệnh đề nhận định:</p>
+            <p class="text-base sm:text-lg font-medium text-slate-800 dark:text-slate-100 leading-relaxed">
+              "${q.q}"
+            </p>
+          </div>
+
+          <!-- Buttons True / False -->
+          <div id="tf-actions" class="grid grid-cols-2 gap-4 pt-2">
+            <button onclick="checkTF(true)" class="py-4 px-6 rounded-2xl border-2 border-emerald-500/30 hover:border-emerald-500 bg-emerald-50/50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-300 font-bold text-lg flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-sm">
+              <i class="ph-bold ph-check text-2xl text-emerald-500"></i> TRUE (Đúng)
+            </button>
+            <button onclick="checkTF(false)" class="py-4 px-6 rounded-2xl border-2 border-rose-500/30 hover:border-rose-500 bg-rose-50/50 dark:bg-rose-950/20 text-rose-700 dark:text-rose-300 font-bold text-lg flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-sm">
+              <i class="ph-bold ph-x text-2xl text-rose-500"></i> FALSE (Sai)
+            </button>
+          </div>
+
+          <!-- Feedback block -->
+          <div id="tf-feedback" class="hidden space-y-3 p-4 rounded-xl border"></div>
+
+          <div id="tf-next-wrap" class="hidden flex justify-end pt-2">
+            <button onclick="nextTFQuestion()" class="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm flex items-center gap-2">
+              Câu tiếp theo <i class="ph ph-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function checkTF(userChoice) {
+      const q = tfQuestions[tfCurrentIndex];
+      const isCorrect = (userChoice === q.a);
+      const fb = document.getElementById('tf-feedback');
+      const actions = document.getElementById('tf-actions');
+      const nextWrap = document.getElementById('tf-next-wrap');
+
+      // Disable buttons
+      actions.querySelectorAll('button').forEach(b => {
+        b.disabled = true;
+        b.classList.add('opacity-60', 'cursor-not-allowed');
+      });
+
+      fb.classList.remove('hidden');
+      nextWrap.classList.remove('hidden');
+
+      if (isCorrect) {
+        tfCorrectCount++;
+        addGlobalScore(10);
+        fb.className = "space-y-2 p-4 rounded-xl border bg-emerald-50 dark:bg-emerald-950/60 border-emerald-300 dark:border-emerald-800 text-emerald-900 dark:text-emerald-100";
+        fb.innerHTML = `
+          <div class="flex items-center gap-2 font-bold text-emerald-700 dark:text-emerald-400">
+            <i class="ph-fill ph-check-circle text-xl"></i> Chính xác! Đáp án đúng là: ${q.a ? 'TRUE (Đúng)' : 'FALSE (Sai)'}
+          </div>
+          <p class="text-xs sm:text-sm text-emerald-800 dark:text-emerald-300/90 leading-relaxed font-normal">${q.exp}</p>
+        `;
+      } else {
+        fb.className = "space-y-2 p-4 rounded-xl border bg-rose-50 dark:bg-rose-950/60 border-rose-300 dark:border-rose-800 text-rose-900 dark:text-rose-100";
+        fb.innerHTML = `
+          <div class="flex items-center gap-2 font-bold text-rose-700 dark:text-rose-400">
+            <i class="ph-fill ph-x-circle text-xl"></i> Chưa chính xác! Đáp án đúng phải là: ${q.a ? 'TRUE (Đúng)' : 'FALSE (Sai)'}
+          </div>
+          <p class="text-xs sm:text-sm text-rose-800 dark:text-rose-300/90 leading-relaxed font-normal">${q.exp}</p>
+        `;
+      }
+    }
+
+    function nextTFQuestion() {
+      tfCurrentIndex++;
+      renderTFQuestion();
+    }
+
+    /* ========================================================
+       SCORE & UTILITIES
+       ======================================================== */
+    function addGlobalScore(pts) {
+      globalScore += pts;
+      document.getElementById('global-score').innerText = globalScore;
+    }
+
+    function triggerConfetti() {
+      if (typeof confetti === 'function') {
+        confetti({
+          particleCount: 80,
+          spread: 70,
+          origin: { y: 0.6 }
+        });
+      }
+    }
+
+    // THEME TOGGLE
+    const themeBtn = document.getElementById('theme-toggle');
+    themeBtn.addEventListener('click', () => {
+      document.documentElement.classList.toggle('dark');
+      localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+    });
+
+    // Check saved theme
+    if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+
+    /* ========================================================
+       INIT ON LOAD
+       ======================================================== */
+    window.addEventListener('DOMContentLoaded', () => {
+      renderFlashcards();
+      startMatchingQuiz();
+      resetFillQuiz();
+      resetTFQuiz();
+    });
+  </script>
+</body>
+</html>
